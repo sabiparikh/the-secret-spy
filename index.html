@@ -2,138 +2,110 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Name the Game</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
+<title>The Secret Spy</title>
 <style>
-body{margin:0;background:black;color:white;font-family:Arial;text-align:center;}
-h1{margin-top:15px;}
-#mission{margin:10px 20px;font-size:18px;}
-button{background:black;color:white;border:2px solid white;padding:12px;margin:8px;width:85%;font-size:16px;border-radius:12px;}
-button:hover{background:white;color:black;}
-canvas{background:black;}
+body{background:#000;color:#fff;font-family:Arial,Helvetica,sans-serif;margin:0;display:flex;justify-content:center;}
+#app{max-width:420px;width:100%;padding:18px;text-align:center;}
+h1{margin-top:10px;font-size:34px;}
+#mission{font-size:16px;margin:10px 0 20px;}
+.card{border:1px solid #fff;border-radius:14px;padding:16px;margin-top:10px;}
+button{width:100%;padding:14px;margin:8px 0;border-radius:12px;border:1px solid #fff;background:#000;color:#fff;font-size:15px;}
+button:active{background:#fff;color:#000;}
+.hidden{display:none;}
+.big{font-size:26px;margin-top:30px;}
 </style>
 </head>
-
 <body>
+<div id="app">
+<h1>The Secret Spy</h1>
+<div id="mission">Mission - You have to find the code which three friends are using in order to spy on their messages.</div>
 
-<h1>Name the Game</h1>
-<div id="mission">You have to name the action that the stick figure is doing.</div>
+<div id="game"></div>
 
-<canvas id="canvas" width="260" height="270"></canvas>
-<div id="options"></div>
-<div id="result"></div>
+<div id="end" class="hidden">
+<div id="endText" class="big"></div>
+<button onclick="restartGame()">Play Again</button>
+</div>
+</div>
 
 <script>
-const ctx = canvas.getContext("2d");
-ctx.strokeStyle="white";
-ctx.fillStyle="white";
-ctx.lineWidth=4;
-
-let frame=0;
-let questionIndex=0;
-
-function drawStick(x,y,a1,a2,l1,l2,rot=0){
- ctx.save();
- ctx.translate(x,y);
- ctx.rotate(rot);
- ctx.beginPath(); ctx.arc(0,-40,12,0,Math.PI*2); ctx.stroke();
- ctx.beginPath(); ctx.moveTo(0,-28); ctx.lineTo(0,0); ctx.stroke();
- ctx.beginPath(); ctx.moveTo(0,-20); ctx.lineTo(a1,-5); ctx.stroke();
- ctx.beginPath(); ctx.moveTo(0,-20); ctx.lineTo(a2,-5); ctx.stroke();
- ctx.beginPath(); ctx.moveTo(0,0); ctx.lineTo(l1,30); ctx.stroke();
- ctx.beginPath(); ctx.moveTo(0,0); ctx.lineTo(l2,30); ctx.stroke();
- ctx.restore();
-}
-
-function drawEmoji(emoji,x,y,size){
- ctx.font=size+"px Arial";
- ctx.fillText(emoji,x,y);
-}
-
-function actionMakeBabyLaugh(){
- let t=frame%320;
- if(t<80) drawStick(130,170,0,0,10,-10,t/200);
- else if(t<160) drawStick(130,170,40*Math.sin(t/5),0,10,-10);
- else if(t<240) drawStick(130,170,20*Math.sin(t/3),-20*Math.sin(t/3),15,-15);
- else drawStick(130,200,0,0,20,-20);
-}
-
-function actionSignal(){
- let arm=70*Math.sin(frame/4);
- drawStick(130,170,arm,0,10,-10);
- drawEmoji("💡",170,115,30);
-}
-
-function actionCaffeineRush(){
- let t=frame%300;
- if(t<100){
-   drawStick(130,170,40,0,10,-10);
-   drawEmoji("🫖",175,130,28);
- }
- else if(t<200){
-   drawStick(130,170,10,0,10,-10);
-   drawEmoji("☕",150,120,26);
- }
- else{
-   drawStick(130,170,40*Math.sin(t/4),-40*Math.sin(t/4),15,-15);
- }
-}
-
-//// FINAL ACTION — ONLY SWIMMING + FLOATING
-function actionCoach(){
- let t = frame % 300;
-
- function label(text){
-   ctx.font="22px Arial";
-   ctx.fillText(text,80,30);
- }
-
- if(t < 150){
-   label("Swimming");
-   let swim=Math.sin(t/6)*50;
-   drawStick(130,110,swim,-swim,25,-25);
- }
- else{
-   label("Floating");
-   drawStick(130,150,10,-10,0,0,Math.PI/2);
- }
-}
-
 const questions=[
-{draw:actionMakeBabyLaugh,options:["The stick figure is in dance class","The stick figure is trying to make a baby laugh","The stick figure is kidnapped and is trying to signal for help."],answer:1},
-{draw:actionSignal,options:["The stick figure is trying to signal to someone","The stick figure was taking a round in the house but was surprised by something unusual.","The stick figure is just having fun."],answer:0},
-{draw:actionCaffeineRush,options:["The stick figure is trying to make a baby laugh","The stick figure got a caffeine rush","The stick figure is trying to teach someone how to dance."],answer:1},
-{draw:actionCoach,options:["The stick figure is coaching a student","The stick figure has won a tournament","The stick figure is doing a silly dance"],answer:0}
+{
+q:"Instance 1 - Find the code that the three friends have used.",
+coded:"WORROMOT TUOEDIH EHT TA EM TEEM",
+uncoded:"MEET ME AT THE HIDEOUT TOMORROW",
+options:[
+"It reverses the letters and words in order to form a sentence.",
+"It reverses only some letters while in the others it is normal.",
+"It reverses all the letters but not the words."
+],
+answer:0
+},
+{
+q:"Instance 2 - Find the code that the friends have used",
+coded:"THE DROWSSAP IS EEW YLLIW AKNOW. REMEMBER SYUG. THE TUOEDIH IS NO THE DNOCES TREE OT ETH RIGHT.",
+uncoded:"THE HIDEOUT IS ON THE SECOND TREE TO THE RIGHT. THE PASSWORD IS WEE WILLY WONKA. REMEMBER GUYS.",
+options:[
+"It reverses the letters alternatively and reverses the sentences instead of the words.",
+"It reverses only some letters while in the others it is normal.",
+"It takes the first letter puts it at the last and the rest stays the same."
+],
+answer:0
+},
+{
+q:"Instance 3 - Find the code that the friends have used.",
+coded:"AKEM URES OT EEPK HOSET MALLS IDSK UTO FO URO USINESSB",
+uncoded:"MAKE SURE TO KEEP THOSE SMALL KIDS OUT OF OUR BUSINESS.",
+options:[
+"It reverses only some letters while in the others it is normal.",
+"It reverses the letters alternatively and reverses the sentences instead of the words.",
+"It takes the first letter puts it at the last and the rest stays the same."
+],
+answer:2
+}
 ];
 
-function animate(){
- ctx.clearRect(0,0,260,270);
- questions[questionIndex].draw();
- frame++;
- requestAnimationFrame(animate);
-}
-animate();
+let index=0;
+const gameDiv=document.getElementById('game');
+const endDiv=document.getElementById('end');
+const endText=document.getElementById('endText');
 
 function loadQuestion(){
- result.innerHTML="";
- options.innerHTML="";
- questions[questionIndex].options.forEach((opt,i)=>{
-   let btn=document.createElement("button");
-   btn.innerText=opt;
-   btn.onclick=()=>checkAnswer(i);
-   options.appendChild(btn);
- });
+let q=questions[index];
+let html=`<div class='card'>
+<h3>${q.q}</h3>
+<p><b>Coded:</b><br>${q.coded}</p>
+<p><b>Uncoded:</b><br>${q.uncoded}</p>`;
+
+q.options.forEach((opt,i)=>{
+html+=`<button onclick='choose(${i})'>${opt}</button>`;
+});
+html+="</div>";
+
+gameDiv.innerHTML=html;
 }
 
-function checkAnswer(choice){
- if(choice===questions[questionIndex].answer){
-   questionIndex++;
-   if(questionIndex>=questions.length){
-     options.innerHTML='<button onclick="location.reload()">Play Again</button>';
-     result.innerHTML="Game Over 🎉";
-   } else loadQuestion();
- } else result.innerHTML="Try again!";
+function choose(i){
+if(i!==questions[index].answer){
+endGame(false);
+return;
+}
+index++;
+if(index>=questions.length) endGame(true);
+else loadQuestion();
+}
+
+function endGame(win){
+gameDiv.innerHTML="";
+endDiv.classList.remove('hidden');
+endText.textContent=win?"You Won":"Game Over";
+}
+
+function restartGame(){
+index=0;
+endDiv.classList.add('hidden');
+loadQuestion();
 }
 
 loadQuestion();
